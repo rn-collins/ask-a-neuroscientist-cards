@@ -9,7 +9,7 @@ Education, not medical or legal advice.
 
 ## What this repository is
 
-This is the open edition. It holds everything needed to rebuild the live site: the build, the tests, the stylesheet, and the cards and written content of the pieces that have been released. As of 2026-10-13 that is 1 of the 113 pieces in the series.
+This is the open edition. It holds everything needed to rebuild the live site: the build, the tests, the stylesheet, and the cards and written content of the pieces that have been released. As of 2026-10-14 that is 1 of the 113 pieces in the series.
 
 The other 112 pieces are not here. The series is released on a calendar, and a public repository would publish every unreleased card, text and source list ahead of that calendar. They live in a private source repository, which is where the site is built and deployed from. Here they appear only as one number in `data/withheld.json`: no title, no date, no text, no source.
 

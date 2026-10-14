@@ -222,5 +222,64 @@ class Safety(unittest.TestCase):
             build.LIVE_PAGES.clear()
 
 
+class Addresses(unittest.TestCase):
+    """A card never publishes at an address an index page uses, and a card with its
+    own body class (the dark cards) still gets the reader class. Every piece is built,
+    in memory only, as in the Safety tests."""
+
+    def build_all(self, tmp):
+        real = build.load_releases
+        every = lambda: {s: {**e, "hold": False, "releasedAt": "2028-12-31"} for s, e in real().items()}
+        build.load_releases = every
+        try:
+            return build_into(tmp, datetime.date(2028, 12, 31))
+        finally:
+            build.load_releases = real
+
+    def test_the_reserved_paths_match_the_index_pages(self):
+        self.assertEqual(build.RESERVED_PATHS, INDEX_PAGES)
+
+    def test_no_card_takes_an_index_address(self):
+        for f in (ROOT / "content").glob("*.json"):
+            self.assertNotIn(build.path_for(f.stem), INDEX_PAGES, f.stem)
+        for short in build.RESERVED_PATHS:
+            self.assertEqual(build.path_for("aan-" + short), "aan-" + short, short)
+            self.assertEqual(build.path_for("arc-" + short), "arc-" + short, short)
+        self.assertEqual(build.path_for("aan-sample"), "sample")
+        self.assertEqual(build.path_for("arc-sample"), "sample")
+        self.assertEqual(build.path_for("plain"), "plain")
+
+    def test_the_question_page_is_not_overwritten_by_a_card(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dist = self.build_all(tmp)
+            ask = (dist / "ask" / "index.html").read_text()
+            self.assertIn('id="askform"', ask)
+            # A card whose short path is a reserved address is built at its full slug.
+            for f in (ROOT / "content").glob("*.json"):
+                if f.stem.startswith(("aan-", "arc-")) and f.stem[4:] in build.RESERVED_PATHS:
+                    card = (dist / f.stem / "index.html").read_text()
+                    self.assertIn('<main class="reader" id="read">', card, f.stem)
+
+    def test_every_card_page_has_the_reader_class(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dist = self.build_all(tmp)
+            seen = dark = 0
+            for page_file in dist.rglob("index.html"):
+                page = page_file.read_text()
+                if '<main class="reader" id="read">' not in page:
+                    continue
+                body = re.search(r"<body[^>]*>", page).group(0)
+                self.assertIn("reader-page", body, str(page_file.relative_to(dist)))
+                seen += 1
+                dark += "dark" in body
+            self.assertGreater(seen, 0)
+            self.assertGreater(dark, 0, "expected the dark cards to keep their own class")
+
+    def test_add_reader_class(self):
+        self.assertEqual(build.add_reader_class("<body>"), '<body class="reader-page">')
+        self.assertEqual(build.add_reader_class('<body class="dark">'), '<body class="dark reader-page">')
+        self.assertEqual(build.add_reader_class('<body class="a b" data-x="1">'), '<body class="a b reader-page" data-x="1">')
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -65,13 +65,20 @@ FIT_NEW = (
 )
 
 
+# Addresses the index, question and inbox pages use. A card never publishes at one of these:
+# a card stored as aan-ask would otherwise be overwritten by the question page at /ask/.
+RESERVED_PATHS = {"ask", "questions", "inbox", "archive", "plants", "places", "how-it-works", "glossary", "everyday"}
+
+
 def path_for(slug):
     """The published path for a card. Cards are stored as aan-awa and arc-coa;
     they publish at /awa/ and /coa/, because these links get pasted into
-    captions. The stored paths redirect."""
+    captions. The stored paths redirect. A card whose short path is one of the
+    RESERVED_PATHS keeps its full stored slug (aan-ask publishes at /aan-ask/)."""
     for prefix in ("aan-", "arc-"):
         if slug.startswith(prefix):
-            return slug[len(prefix):]
+            short = slug[len(prefix):]
+            return slug if short in RESERVED_PATHS else short
     return slug
 
 
@@ -353,6 +360,17 @@ def head_tags(c):
     )
 
 
+def add_reader_class(page):
+    """Mark the page as a reader page. A card may already carry its own body class
+    (the dark cards), so the class is added to it, never replaced or skipped."""
+    def fix(m):
+        attrs = m.group(1) or ""
+        if 'class="' in attrs:
+            return "<body" + re.sub(r'class="([^"]*)"', lambda c: f'class="{c.group(1)} reader-page"', attrs, count=1) + ">"
+        return f'<body class="reader-page"{attrs}>'
+    return re.sub(r"<body((?:\s[^>]*)?)>", fix, page, count=1)
+
+
 def build_card(slug, c, content, releases, order, today):
     raw = card_html(slug)
     if raw is None:
@@ -367,7 +385,7 @@ def build_card(slug, c, content, releases, order, today):
         1,
     )
     page, n = FIT_OLD.subn(FIT_NEW, page)
-    page = page.replace("<body>", '<body class="reader-page">', 1)
+    page = add_reader_class(page)
     page = page.replace('<div class="stage">', sitebar() + '<div class="hero"><div class="stage">', 1)
     page = page.replace("</div><script>", "</div></div>" + reader_html(c, content, releases, order, today) + footer() + "<script>", 1)
     note = None if n else f"{slug}: stage scaling not patched"
