@@ -1,0 +1,16 @@
+{
+ "about": "One entry per piece. A piece is public only when releasedAt (a date in Pacific/Honolulu) is today or earlier and hold is false. Empty releasedAt means unreleased. scripts/build.py reads this file and nothing else to decide what is built.",
+ "timeZone": "Pacific/Honolulu",
+ "pieces": [
+  {
+   "id": "fatnugs/fn-01",
+   "slug": "arc-coa",
+   "releasedAt": "2026-10-05",
+   "hold": false,
+   "postUrls": [],
+   "longFormUrl": "https://www.fatnugsmag.com/what-cannabis-coa-cannot-tell-you/",
+   "sourcePageUrl": "https://rn-selected-work.vercel.app/sources/fatnugs/fn-01",
+   "otherSourcePages": []
+  }
+ ]
+}

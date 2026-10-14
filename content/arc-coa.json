@@ -1,0 +1,96 @@
+{
+  "slug": "arc-coa",
+  "title": "What a cannabis certificate of analysis does not measure",
+  "dek": "A COA is a one-sample safety floor and a potency estimate, and measured THC has come in well below what labels claim.",
+  "kind": "archive",
+  "body": [
+    "Every regulated cannabis product carries a certificate of analysis, usually behind a QR code. Collins asked what it is built to report. Massachusetts writes it out: a cannabinoid profile is the dry-weight percentages of delta-9-THC, CBD, THCA and CBDA, other cannabinoids optional. Four metals, pesticides, growth regulators, microbes and five mycotoxins follow. Terpenes, which carry the aroma a buyer picks on, sit outside the panel.",
+    "The potency figure has the weaker record. Schwabe and colleagues ran HPLC on 23 flower samples from ten Colorado dispensaries. Average observed THC was 14.98 percent, 23.1 percent below the lowest label value and 35.6 percent below the highest; about 70 percent ran more than 15 percent under label. The authors suspect absent protocols, thin oversight and high-THC pricing. Cannabis Science and Technology reported that Yasha Kahn, co-founder of the lab MCR Labs and so a competitor of the labs he describes, has pulled 2.4 million flower results from 144 labs in 20 states by public-records request.",
+    "Massachusetts started checking shelves in May 2026. A label counts as accurate only if the Commission's own audit lands within 25 percent of it, and one sample package must now go to a single lab, narrowing the room to shop batches. In one notice a lot labelled 37.94 percent total THC averaged 30.04, inside the band. The Commission's own release says 13 of 63 products, from 62 producers, fell outside it. The protocol concedes that finished flower resists homogenising, so one sample speaks for a batch.",
+    "Nevada's Cannabis Compliance Board fined the lab Cannex Nevada, trading as LettuceTest, $57,500 and suspended its licences 180 days for passing microbially contaminated samples and inflating THC, its own final order says."
+  ],
+  "warning": "Education, not medical advice. It is not legal advice either. A passing certificate of analysis is not a safety guarantee: it reports one sample against a fixed list of analytes that each state sets differently. Federal law has sat in two places since 28 April 2026, when marijuana in an FDA-approved drug product or under a state medical marijuana license moved to Schedule III. Every other form, state-licensed adult-use cannabis included, remains Schedule I.",
+  "original": {
+    "title": "What a Cannabis COA Cannot Tell You About Your Products",
+    "url": "https://www.fatnugsmag.com/what-cannabis-coa-cannot-tell-you/",
+    "publication": "Fat Nugs Magazine",
+    "date": "5 October 2026"
+  },
+  "sources": [
+    {
+      "title": "What a Cannabis COA Cannot Tell You About Your Products",
+      "publisher": "Fat Nugs Magazine",
+      "date": "5 October 2026",
+      "url": "https://www.fatnugsmag.com/what-cannabis-coa-cannot-tell-you/",
+      "supports": "The original article: the argument that a certificate of analysis is a narrow safety floor and potency estimate rather than a description of cultivation quality, and the state-by-state patchwork of what the required panel covers."
+    },
+    {
+      "title": "Uncomfortably high: Testing reveals inflated THC potency on retail Cannabis labels",
+      "publisher": "PLOS ONE 18(4):e0282396",
+      "date": "12 April 2023",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/37043421/",
+      "supports": "HPLC analysis of 23 samples from 10 dispensaries across the Colorado Front Range; average observed THC potency 14.98 +/- 2.23 percent, 23.1 percent lower than the lowest label-reported value and 35.6 percent lower than the highest; about 70 percent of samples more than 15 percent below the label figure, with three at half the reported maximum; the authors attribute the discrepancy to a lack of standardised testing protocols, limited regulatory oversight and financial incentives to market high THC, while stating the exact source is difficult to determine."
+    },
+    {
+      "title": "Protocol for the Sampling and Analysis of Finished Marijuana Products and Marijuana Products for Marijuana Establishments, Medical Marijuana Treatment Centers, and Colocated Marijuana Operations",
+      "publisher": "Massachusetts Cannabis Control Commission",
+      "date": "implemented 11 March 2021, revised 30 December 2021",
+      "url": "https://masscannabiscontrol.com/wp-content/uploads/2021/06/Finished-Marijuana-Products-Sampling-and-Analysis-Protocol.pdf",
+      "supports": "Cannabinoid Profile is defined as the dry-weight percentages of delta-9-THC, CBD, THCA and CBDA, with amounts of other cannabinoids reportable but not required; characterisation must include at a minimum delta-9-THC and CBD and no minimum profile standards are mandated; finished products must be tested for four metals, for pesticide residues and plant growth regulators, and for microbiological contaminants and mycotoxins, where mycotoxins means aflatoxin B1, B2, G1, G2 and ochratoxin A; representative sampling turns on homogeneity, physical form and quantity, and homogenisation of the finished plant material may be difficult to accomplish prior to sampling due to the heterogeneous nature of that material. Terpenes are absent from the required testing panel; the protocol's only mention of them is the requirement that terpenes added in the production of a vape product be disclosed at the point of sale."
+    },
+    {
+      "title": "Massachusetts Cannabis Control Commission to Begin Auditing THC Potency on Labels",
+      "publisher": "Massachusetts Cannabis Control Commission",
+      "date": "22 May 2026",
+      "url": "https://masscannabiscontrol.com/2026/05/massachusetts-cannabis-control-commission-to-begin-auditing-thc-potency-on-labels/",
+      "supports": "The Commission is auditing labelled THC potency; a product whose THC falls outside 75 to 125 percent of the label figure is out of compliance and removed from the market through administrative action until resolved, and mislabelled products may be referred to the Attorney General's Consumer Advocacy and Response Division; the state has 11 Independent Testing Laboratories; the Commission requires licensees to submit one test sample package to a single laboratory for all compliance testing, requires laboratories to upload digital certificates of analysis after every test and is working with the Metrc seed-to-sale system to make them available to consumers and patients; a Summary Suspension Order was issued to Assured Testing Laboratories after an investigation into falsified test results."
+    },
+    {
+      "title": "Notice: Shelf Audit Results, M1 Enterprises, LLC (MC281252)",
+      "publisher": "Massachusetts Cannabis Control Commission, Enforcement Counsel",
+      "date": "13 August 2026",
+      "url": "https://masscannabiscontrol.com/wp-content/uploads/2025/12/20260813-Notice-of-Potency-Audit-Results-M1-Enterprises-LLC.pdf",
+      "supports": "The Commission obtained a retail sample on 13 May 2026 and submitted it blind to the same laboratory that did the original testing, directing it to homogenise the sample and take three random sub-samples; against a labelled 37.94 percent Total THC the three audits returned 28.74, 29.94 and 31.43 percent, an average of 30.04 percent and a deviation of minus 20.84 percent from the label; a flower label is treated as accurate if it falls within plus or minus 25 percent of the audit average. Because the deviation exceeded 15 percent but not 25 percent, the notice records the product as within expected values and recommends a root cause analysis rather than imposing discipline."
+    },
+    {
+      "title": "Massachusetts Cannabis Control Commission Releases Potency Audit Results",
+      "publisher": "Massachusetts Cannabis Control Commission",
+      "date": "13 August 2026",
+      "url": "https://masscannabiscontrol.com/2026/08/massachusetts-cannabis-control-commission-releases-potency-audit-results/",
+      "supports": "The Commission's own announcement of the shelf-audit results: it selected 63 cannabis flower products from 62 producers off the shelves of retail stores and medical dispensaries and used Independent Testing Laboratories to verify potency; each compliant product was rated green for high accuracy or yellow for products near the edge of the acceptable range, and thirteen samples were rated red for falling outside it, with seven products within 2 percent of the labelled potency; an accurate label is within 75 to 125 percent of the figure shown; the Commission placed holds on the noncompliant products and red-noticed producers must recall and repurpose with new testing, recall and relabel with the audit result, retest, or destroy; the audit began in May 2026 and the state had 10 Independent Testing Laboratories at the time of the release."
+    },
+    {
+      "title": "Result Manipulation: From THC Inflation to Aspergillus",
+      "publisher": "Cannabis Science and Technology 8(2):27-29",
+      "date": "6 May 2025",
+      "url": "https://www.cannabissciencetech.com/view/result-manipulation-from-thc-inflation-to-aspergillus",
+      "supports": "Yasha Kahn is identified in the article as co-founder of MCR Labs, a cannabis testing laboratory, which is a commercial stake in the labs his analysis describes; Kahn and MCR Labs used Freedom of Information Act requests to acquire testing-laboratory data from 20 of the 39 states with cannabis regulations, a compilation covering 2.4 million flower samples, 144 labs and nearly 68 million data points; in Mississippi the distribution of reported total THC shows a steep cliff just above the state's 30 percent statutory potency ceiling; Jeff Rawson of the Institute of Cannabis Science states that compliance testing is rarely analysed systematically and that retail products are not measured at all."
+    },
+    {
+      "title": "Final Order of the Cannabis Compliance Board Including Findings of Fact, Conclusions of Law, and Imposing Discipline, Case No. 2020-27 (Cannex Nevada, LLC, now known as LettuceTest, LLC)",
+      "publisher": "Nevada Cannabis Compliance Board",
+      "date": "4 March 2024 (adjudicated 15 February 2024)",
+      "url": "https://ccb.nv.gov/wp-content/uploads/2024/03/CCB-Final-Order-on-Adjudication-of-Cannex-Case-No.-2020-27-dated-03.04.2024.pdf",
+      "supports": "The Board's own final order against Cannex Nevada, LLC, now known as LettuceTest, LLC: it imposes a 180-day suspension of license Nos. L006 and RL006 and a total civil penalty of $57,500, and orders the respondent to cease all cannabis operations on service until the suspension is terminated; the violations found include performing unauthorized retesting of samples for microbials, reporting passing microbial results to the Department when the initial results showed the samples failed, and falsely inflating THC potency results after retesting; the Board declined to adopt the Hearing Officer's recommendation of revocation."
+    }
+  ],
+  "related": [],
+  "tags": [
+    "cannabis",
+    "testing",
+    "THC",
+    "regulation",
+    "Colorado",
+    "Massachusetts"
+  ],
+  "card": {
+    "line1": "THE COA",
+    "line2": "AND ITS EDGES",
+    "dateline": "From Fat Nugs, October 2026",
+    "points": [
+      "Measured THC ran 23 to 36 percent under the label.",
+      "Massachusetts found 13 of 63 audited products out of range.",
+      "One hand-pulled sample stands in for a whole batch."
+    ]
+  }
+}

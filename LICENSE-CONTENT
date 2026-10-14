@@ -1,0 +1,13 @@
+Copyright (c) 2026 RN Collins. All rights reserved.
+
+The written content, the animated cards and the data in this repository
+(content/, cards/ and data/) are the work of RN Collins and are not licensed
+for reuse or redistribution.
+
+You may quote short passages with credit and a link to the live site:
+https://askaneuroscientist.vercel.app
+
+For any other use, ask first through the site.
+
+The code in this repository (scripts/, tests/, .github/ and assets/aan.css) is
+licensed separately under the MIT License. See LICENSE.
