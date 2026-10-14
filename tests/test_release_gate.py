@@ -273,7 +273,10 @@ class Addresses(unittest.TestCase):
                 seen += 1
                 dark += "dark" in body
             self.assertGreater(seen, 0)
-            self.assertGreater(dark, 0, "expected the dark cards to keep their own class")
+            # The open edition carries only the released cards, which may include no dark one.
+            has_dark = any('<body class="dark"' in f.read_text() for f in (ROOT / "cards").glob("*.html"))
+            if has_dark:
+                self.assertGreater(dark, 0, "expected the dark cards to keep their own class")
 
     def test_add_reader_class(self):
         self.assertEqual(build.add_reader_class("<body>"), '<body class="reader-page">')
