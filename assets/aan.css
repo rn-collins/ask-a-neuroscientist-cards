@@ -210,3 +210,31 @@ body.reader-page .stage { background: inherit }
 .elsewhere a { color: var(--r-accent) }
 .pager { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 2rem 0 0; font-size: 0.9375rem }
 .pager a { color: var(--r-ink) }
+
+/* The standard safety block, in the footer of every page.
+ * Same warm paper and line colours as the warning box; text is the page ink
+ * on white and its links are underlined ink, so contrast is well above AA. */
+.safety {
+  max-width: 40rem;
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--r-warn-line);
+  border-left-width: 4px;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--r-ink);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.safety h2 {
+  margin: 0 0 0.2rem;
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--r-soft);
+}
+.safety p { margin: 0 }
+.safety a { color: var(--r-ink); text-decoration: underline; text-underline-offset: 0.15em; overflow-wrap: anywhere }
+.safety a:hover { text-decoration-thickness: 2px }
+.safety a:focus-visible { outline: 2px solid var(--r-ink); outline-offset: 2px }

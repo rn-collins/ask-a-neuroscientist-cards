@@ -106,5 +106,121 @@ class Output(unittest.TestCase):
             self.check_day(datetime.date.fromisoformat(DATES[-1]))
 
 
+class Safety(unittest.TestCase):
+    """The standard safety block is on every page, and a hazard warning comes
+    before the text it warns about. Pieces held back for a later date are
+    covered too: the release record is read as if every piece were released,
+    in memory only, so data/releases.json is never touched."""
+
+    PHRASE = "Education, not medical advice."
+    ASIDE = re.compile(r'<aside class="safety".*?</aside>', re.S)
+
+    def build_all(self, tmp):
+        """Build every piece (as of a far-off date). Returns the dist folder."""
+        real = build.load_releases
+        every = lambda: {s: {**e, "hold": False, "releasedAt": "2028-12-31"} for s, e in real().items()}
+        build.load_releases = every
+        try:
+            dist = build_into(tmp, datetime.date(2028, 12, 31))
+        finally:
+            build.load_releases = real
+        return dist
+
+    def pages(self, dist):
+        return {"/" + str(p.relative_to(dist)): p.read_text() for p in dist.rglob("index.html")}
+
+    def test_every_page_has_the_block_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dist = self.build_all(tmp)
+            pages = self.pages(dist)
+            self.assertTrue(any(k.split("/")[1] not in INDEX_PAGES for k in pages), "expected piece pages to be built")
+            key_built = "/warning-key/index.html" in pages
+            for path, page in pages.items():
+                blocks = self.ASIDE.findall(page)
+                self.assertEqual(len(blocks), 1, f"{path}: safety block count")
+                block = blocks[0]
+                for need in (self.PHRASE, "call 911", "1-800-222-1222"):
+                    self.assertIn(need, block, f"{path}: {need}")
+                self.assertEqual('href="/warning-key/"' in block, key_built, f"{path}: warning key link")
+                # In the footer, after everything else on the page.
+                self.assertLess(page.index("<footer"), page.index('<aside class="safety"'), path)
+                self.assertGreater(page.index("</footer>"), page.index("</aside>"), path)
+            if any(build.path_for(f.stem) == "warning-key" for f in (ROOT / "content").glob("*.json")):
+                self.assertTrue(key_built, "the warning key page is part of the series")
+
+    def test_hazard_warning_is_above_the_body(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dist = self.build_all(tmp)
+            seen = 0
+            for f in sorted((ROOT / "content").glob("*.json")):
+                c = json.loads(f.read_text())
+                page_file = dist / build.path_for(f.stem) / "index.html"
+                if not c.get("warning") or not page_file.exists():
+                    continue
+                page = page_file.read_text()
+                if '<main class="reader" id="read">' not in page:
+                    continue  # the address belongs to an index page (aan-ask and /ask/)
+                seen += 1
+                self.assertEqual(page.count('<div class="warn"'), 1, f.stem)
+                at = page.index('<div class="warn"')
+                self.assertIn(build.esc(c["warning"]), page[at:page.index("</div>", at)], f.stem)
+                self.assertGreater(at, page.index("</h1>"), f"{f.stem}: warning before the title")
+                if c.get("body"):
+                    first = page.index("<p>" + build.esc(c["body"][0]) + "</p>")
+                    self.assertLess(at, first, f"{f.stem}: warning is below the body text")
+            # Every piece with a warning (the series furniture templates are never built).
+            want = [f for f in (ROOT / "content").glob("*.json")
+                    if not f.stem.startswith("_") and build.path_for(f.stem) not in INDEX_PAGES
+                    and json.loads(f.read_text()).get("warning") and json.loads(f.read_text()).get("role") != "template"]
+            self.assertEqual(seen, len(want), "pieces with a warning that were not checked")
+
+    def test_every_piece_is_covered(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dist = self.build_all(tmp)
+            built = {p.parent.name for p in dist.glob("*/index.html")} - INDEX_PAGES
+            # Templates are never built. A piece whose address an index page also uses
+            # (aan-ask and /ask/) is left to that page, which carries the block too.
+            want = {build.path_for(f.stem) for f in (ROOT / "content").glob("*.json")
+                    if not f.stem.startswith("_") and json.loads(f.read_text()).get("role") != "template"} - INDEX_PAGES
+            self.assertEqual(want - built, set(), "pieces the safety check did not see")
+            self.assertGreaterEqual(len(want), 1)
+
+    def test_key_link_follows_the_key_page(self):
+        # Before the warning key is released its page does not exist, so nothing may link to it.
+        key = next((r["releasedAt"] for r in ROWS if build.path_for(r["slug"]) == "warning-key" and r["releasedAt"] and not r["hold"]), None)
+        if key is None:
+            self.skipTest("the warning key is not part of this edition")
+        before = datetime.date.fromisoformat(key) - datetime.timedelta(days=1)
+        with tempfile.TemporaryDirectory() as tmp:
+            dist = build_into(tmp, before)
+            self.assertFalse((dist / "warning-key").exists())
+            for page in dist.rglob("index.html"):
+                self.assertNotIn('href="/warning-key/"', page.read_text(), str(page))
+                self.assertEqual(len(self.ASIDE.findall(page.read_text())), 1, str(page))
+        with tempfile.TemporaryDirectory() as tmp:
+            dist = build_into(tmp, datetime.date.fromisoformat(key))
+            for page in dist.rglob("index.html"):
+                self.assertIn('href="/warning-key/"', self.ASIDE.search(page.read_text()).group(0), str(page))
+
+    def test_the_check_catches_a_missing_block_or_a_misplaced_warning(self):
+        content = {"aan-x": {"slug": "aan-x", "title": "T", "body": ["First para."], "warning": "Careful."}}
+        build.LIVE_PAGES.clear()
+        block = build.safety_block()
+        good = '<main class="reader" id="read"><h1>T</h1><div class="warn" role="note"><b>Before you go further</b>Careful.</div><p>First para.</p>' \
+            '<footer class="foot">' + block + "</footer>"
+        pages = {"/x/index.html": good}
+        self.assertEqual(build.safety_problems(pages, content), [])
+        self.assertTrue(build.safety_problems({"/x/index.html": good.replace(block, "")}, content))
+        self.assertTrue(build.safety_problems({"/x/index.html": good.replace("</footer>", block + "</footer>")}, content))
+        below = '<main class="reader" id="read"><h1>T</h1><p>First para.</p><div class="warn">Careful.</div>' + good[good.index("<footer"):]
+        self.assertTrue(build.safety_problems({"/x/index.html": below}, content))
+        self.assertTrue(build.safety_problems({"/x/index.html": good.replace("1-800-222-1222", "")}, content))
+        build.LIVE_PAGES.add(build.KEY_PATH)
+        try:
+            self.assertTrue(build.safety_problems(pages, content), "key page built but not linked")
+        finally:
+            build.LIVE_PAGES.clear()
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

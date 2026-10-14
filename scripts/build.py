@@ -10,6 +10,11 @@ the sitemap and a link-preview image per card.
     python3 scripts/build.py            # build into dist/
     python3 scripts/build.py --check    # report problems, write nothing
     python3 scripts/build.py --today 2026-10-18   # preview the site as of a date
+    python3 scripts/build.py --check --today 2028-12-31   # check every piece, released or not
+
+Every page carries the standard safety block (safety_block) and a piece's hazard
+warning stands above its text; safety_problems fails the build if either is not
+so, with or without --check.
 
 What is public is decided by data/releases.json and nothing else. A piece is
 built only when its releasedAt date (Pacific/Honolulu) is today or earlier and
@@ -153,6 +158,15 @@ NAV = [("/plants/", "Plants"), ("/places/", "Places"), ("/how-it-works/", "How i
 # Filled in by main() with the index paths that have at least one released piece.
 LIVE_INDEXES = set()
 
+# The standard safety block (see safety_block). The warning key is a piece like
+# any other, so its page exists only from its release date; the block links to
+# it from that day on and never before, so the link can not land on a 404.
+SAFETY_PHRASE = "Education, not medical advice."
+POISON_HELP = "1-800-222-1222"
+KEY_PATH = "/warning-key/"
+# Filled in by main(): the page paths (here only the key) that are built.
+LIVE_PAGES = set()
+
 
 def kind_index(kind):
     """The index page that lists a kind, if that index is built."""
@@ -171,11 +185,27 @@ def sitebar():
     )
 
 
+def safety_block():
+    """The standard safety block, written on every page of the site.
+
+    One block, one wording, in the footer of every page the build writes:
+    the series is education, the emergency number, the Poison Help number,
+    and a link to the warning key, the page that explains the series'
+    warnings. build.py and the tests fail when a page lacks it."""
+    key = f' <a href="{KEY_PATH}">What the warnings in this series mean</a>.' if KEY_PATH in LIVE_PAGES else ""
+    return (
+        '<aside class="safety" aria-labelledby="safety-title"><h2 id="safety-title">Safety</h2>'
+        f"<p><strong>{SAFETY_PHRASE}</strong> In an emergency, call 911. "
+        f'For a possible poisoning in the US, call Poison Help at <a href="tel:{POISON_HELP.replace("-", "")}">{POISON_HELP}</a>.'
+        f"{key}</p></aside>"
+    )
+
+
 def footer():
     return (
-        '<footer class="foot"><p>Ask a Neuroscientist is written by RN Collins. '
-        'The series began at <i>Fat Nugs Magazine</i>. Education, not medical or legal advice: '
-        'talk to a clinician about your own health, and check the law where you live.</p></footer>'
+        '<footer class="foot">' + safety_block() + '<p>Ask a Neuroscientist is written by RN Collins. '
+        'The series began at <i>Fat Nugs Magazine</i>. Nothing here is legal advice. '
+        'Talk to a clinician about your own health, and check the law where you live.</p></footer>'
     )
 
 
@@ -271,10 +301,11 @@ def reader_html(c, content, releases, order, today):
             f'<p class="origin">First published as <a href="{esc(o["url"])}" rel="noreferrer">'
             f'{esc(o["title"])}</a> in <i>{esc(o["publication"])}</i>, {esc(o["date"])}.</p>'
         )
+    # A hazard warning comes before the text it warns about, not after it.
+    if c.get("warning"):
+        parts.append(f'<div class="warn" role="note"><b>Before you go further</b>{esc(c["warning"])}</div>')
     for para in c.get("body", []):
         parts.append(f"<p>{esc(para)}</p>")
-    if c.get("warning"):
-        parts.append(f'<div class="warn"><b>Before you go further</b>{esc(c["warning"])}</div>')
     if c.get("sources"):
         parts.append("<h2>Sources</h2><ol class=\"sources\">")
         for s in c["sources"]:
@@ -534,6 +565,55 @@ def build_posters(content):
     return page
 
 
+def safety_problems(pages, content):
+    """What is wrong with the safety text on the pages about to be written.
+
+    pages: {"/x/index.html": html} for every page the build writes.
+    content: the built pieces, by slug.
+    Every page must carry the standard block exactly once, in the footer, with
+    its wording; it must link the warning key exactly when that page is built;
+    and a piece with a hazard warning must show it once, after the title and
+    before the first paragraph of the text."""
+    out = []
+    key_live = KEY_PATH in LIVE_PAGES
+    for path, page in sorted(pages.items()):
+        if not path.endswith("/index.html"):
+            continue
+        n = page.count('<aside class="safety"')
+        if n != 1:
+            out.append(f"{path}: standard safety block appears {n} times, not once")
+            continue
+        block = page[page.index('<aside class="safety"'):]
+        block = block[:block.index("</aside>")]
+        if page.rfind("<footer", 0, page.index('<aside class="safety"')) < 0 or "</footer>" not in page.split("</aside>", 1)[1]:
+            out.append(f"{path}: safety block is not in the page footer")
+        for need in (SAFETY_PHRASE, "call 911", POISON_HELP):
+            if need not in block:
+                out.append(f"{path}: safety block lacks {need!r}")
+        has_key = f'href="{KEY_PATH}"' in block
+        if key_live and not has_key:
+            out.append(f"{path}: safety block does not link the warning key")
+        if has_key and not key_live:
+            out.append(f"{path}: safety block links the warning key, which is not built")
+    for slug, c in sorted(content.items()):
+        path = f"/{path_for(slug)}/index.html"
+        page = pages.get(path)
+        # Only piece pages: a piece whose address an index page also uses is not one.
+        if page is None or not c.get("warning") or '<main class="reader" id="read">' not in page:
+            continue
+        if page.count('<div class="warn"') != 1:
+            out.append(f"{path}: hazard warning is not shown exactly once")
+            continue
+        at = page.index('<div class="warn"')
+        if esc(c["warning"]) not in page[at:page.index("</div>", at)]:
+            out.append(f"{path}: hazard warning text is not the piece's own")
+        body = c.get("body") or []
+        first = page.find(f"<p>{esc(body[0])}</p>") if body else -1
+        if page.find("</h1>") > at or (first >= 0 and at > first):
+            out.append(f"{path}: hazard warning is not above the body text")
+    return out
+
+
 def main():
     check = "--check" in sys.argv
     every = load_content()
@@ -551,6 +631,9 @@ def main():
             del content[s]
     order = released_order(content, releases)
     LIVE_INDEXES.clear()
+    LIVE_PAGES.clear()
+    if any(f"/{path_for(s)}/" == KEY_PATH for s in content):
+        LIVE_PAGES.add(KEY_PATH)
     kinds = {c.get("kind", "series") for c in content.values()}
     LIVE_INDEXES.update(p for p, ks, _, _ in INDEXES if kinds & set(ks))
     if any(c.get("original") for c in content.values()):
@@ -575,6 +658,7 @@ def main():
             built[f"/{path_for(slug)}/index.html"] = page
     built.update(build_indexes(content))
     built.update(build_inbox())
+    unsafe = safety_problems(built, content)
 
     search = [
         {"s": path_for(s), "t": c["title"], "d": c.get("dek", ""), "g": " ".join(c.get("tags", []))}
@@ -602,6 +686,11 @@ def main():
           f"released {len(content)} · held {len(every) - len(content)} · pages {len(built)}")
     for p in problems:
         print("  PROBLEM:", p)
+    # A page without the standard safety text is never written, check or not.
+    for p in unsafe:
+        print("  SAFETY:", p)
+    if unsafe:
+        return 1
     if check:
         return 1 if problems else 0
 
